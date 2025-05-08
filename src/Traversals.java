@@ -11,7 +11,13 @@ public class Traversals {
    * @return the sum of leaf node values, or 0 if the tree is null
    */
   public static int sumLeafNodes(TreeNode<Integer> node) {
-    return 0;
+    if (node == null) {
+      return 0;
+    }
+    if(node.left==null && node.right==null){
+      return node.value;
+    }
+    return sumLeafNodes(node.left) + sumLeafNodes(node.right);
   }
 
   /**
@@ -23,7 +29,11 @@ public class Traversals {
    * @return the count of internal nodes, or 0 if the tree is null
    */
   public static int countInternalNodes(TreeNode<Integer> node) {
-    return 0;
+    if (node == null) return 0;
+    if (node.left != null || node.right != null){
+      return node.value;
+    }
+    return countInternalNodes(node.left) + countInternalNodes(node.right);
   }
 
   /**
@@ -37,8 +47,14 @@ public class Traversals {
    * @return a post-order traversal string, or an empty string if the tree is null
    */
   public static <T> String buildPostOrderString(TreeNode<T> node) {
-    return null;
+    if (node == null) {
+        return "";
+    }
+    String left = buildPostOrderString(node.left);
+    String right = buildPostOrderString(node.right);
+    return left + right + node.value.toString();
   }
+  
 
   /**
    * Collects the values of all nodes in the tree level by level, from top to bottom.
@@ -49,7 +65,27 @@ public class Traversals {
    * @return a list of node values in a top-to-bottom order, or an empty list if the tree is null
    */
   public static <T> List<T> collectLevelOrderValues(TreeNode<T> node) {
-    return null;
+    List<T> result = new ArrayList<>();
+    if (node == null) {
+        return result;
+    }
+
+    Queue<TreeNode<T>> queue = new LinkedList<>();
+    queue.add(node);
+
+    while (!queue.isEmpty()) {
+        TreeNode<T> current = queue.poll();
+        result.add(current.value);
+
+        if (current.left != null) {
+            queue.add(current.left);
+        }
+        if (current.right != null) {
+            queue.add(current.right);
+        }
+    }
+
+    return result;
   }
 
   /**
@@ -60,8 +96,20 @@ public class Traversals {
    * @return the number of unique values in the tree, or 0 if the tree is null
    */
   public static int countDistinctValues(TreeNode<Integer> node) {
-    return 0;
-  }
+    Set<Integer> uniqueValues = new HashSet<>();
+    collectDistinctValues(node, uniqueValues);
+    return uniqueValues.size();
+}
+
+private static void collectDistinctValues(TreeNode<Integer> node, Set<Integer> uniqueValues) {
+    if (node == null) {
+        return;
+    }
+    uniqueValues.add(node.value);
+    collectDistinctValues(node.left, uniqueValues);
+    collectDistinctValues(node.right, uniqueValues);
+}
+
 
   /**
    * Determines whether there is at least one root-to-leaf path in the tree
@@ -72,8 +120,22 @@ public class Traversals {
    * @return true if there exists a strictly increasing root-to-leaf path, false otherwise
    */
   public static boolean hasStrictlyIncreasingPath(TreeNode<Integer> node) {
-    return false;
+    if (node == null) {
+      return false;
   }
+  return hasIncreasingPathHelper(node, Integer.MIN_VALUE);
+}
+
+private static boolean hasIncreasingPathHelper(TreeNode<Integer> node, int prevValue) {
+  if (node == null) {
+      return true; 
+  }
+  if (node.value <= prevValue) {
+      return false; 
+  }
+  return hasIncreasingPathHelper(node.left, node.value) || hasIncreasingPathHelper(node.right, node.value);
+}
+
 
   // OPTIONAL CHALLENGE
   /**
